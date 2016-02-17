@@ -48,7 +48,7 @@ echo -e "https://www.shutterfly.com/promotions_details/\n\n" > email-body
 echo "Downloading webpage: https://www.shutterfly.com/promotions_details/"
 wget -O fetched_home_page_html "https://www.shutterfly.com/promotions_details/"
 
-# Find new or missing cars on the lot#{{{
+# Find new promos on Shutterfly#{{{
 
 dos2unix fetched_home_page_html
 
@@ -94,14 +94,14 @@ for((i=0;i<$ELEMENTS;i++)); do
   fi
 done
 
-# remove "<td>" from each line
+# remove "<div class="headline">" from each line
 sed -i "s@<div class=\"headline\">@@g" divtags_promos
-# remove "</td>" from each line
+# remove "<*</div>" from each line
 sed -i "s@*</div>@@g" divtags_promos
 
 #}}}
 
-# Populate Arrays for the data for the new cars#{{{
+# Populate Arrays for promos#{{{
 
 # Open divtags_promos
 declare -a PROMOS
@@ -111,9 +111,8 @@ exec < $fileName
 let promo_count=0
 
 while read LINE; do
-  # Get car models
+  # get promos into an array
   PROMOS[$promo_count]=$LINE
-  echo "line is: $LINE"
   ((promo_count++))
 done
 
@@ -121,11 +120,8 @@ exec 0<&10 10<&-
 
 #}}}
 
+# Append promos to email body#{{{
 
-
-# Append new cars to email body#{{{
-
-echo "PUT STUFF INTO EMAIL-BODY"
 for PROMO in "${PROMOS[@]}"
 do
   echo "Promo: $PROMO"
