@@ -1,0 +1,40 @@
+#!/bin/bash
+
+cd ~/Documents/git-repos/remote-github/shutterfly-data-extract-from-website
+git pull
+
+# bare bones check that this script started:
+DATE_VAR=$(date +%F_%H:%M:%S)
+echo "$DATE_VAR" >> script_exec_started
+
+DATE_VAR=$(date +%F_%H:%M:%S)
+LOG_FILE_NAME=$DATE_VAR-data-extract-from-website.log
+PATH_TO_LOG_FILE=./logs/$DATE_VAR/$LOG_FILE_NAME
+
+mkdir -p logs
+mkdir -p logs/$DATE_VAR
+time ./extract-from-shutterfly-helper | tee $PATH_TO_LOG_FILE
+
+cp * logs/$DATE_VAR
+
+cd logs/$DATE_VAR
+rm -rf debug-extract-from-shutterfly
+rm -rf extract-from-shutterfly
+rm -rf extract-from-shutterfly-helper
+rm -rf README.md
+rm -rf script_exec_finish
+rm -rf script_exec_started
+
+cd ..
+rm -rf latest
+ln -fs $DATE_VAR/ latest
+
+# Remove all but the newest 29 entries... That is, all the logs from the last
+# 2 weeks do not get deleted  (2 folders a day, for 14 days), as well as the
+# symlink for the latest entry.
+ls -tp | tail -n +30 | xargs -d '\n' rm -rf --
+
+# bare bones check that this script finished:
+cd -
+echo "$DATE_VAR" >> script_exec_finish
+

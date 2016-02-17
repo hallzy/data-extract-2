@@ -1,0 +1,39 @@
+#!/bin/bash
+
+cd ~/Documents/git-repos/remote-github/shutterfly-data-extract-from-website
+git pull
+
+# bare bones check that this script started:
+DATE_VAR=$(date +%F_%H:%M:%S)
+echo "DEBUG-$DATE_VAR" >> script_exec_started
+
+
+mkdir -p temp
+cp * temp
+
+LOG_FILE_NAME=$DATE_VAR-data-extract-from-website.log
+PATH_TO_LOG_FILE=./logs/DEBUG-$DATE_VAR/$LOG_FILE_NAME
+
+mkdir -p logs
+mkdir -p logs/DEBUG-$DATE_VAR
+time ./extract-from-shutterfly-helper DEBUG | tee $PATH_TO_LOG_FILE
+
+cp * logs/DEBUG-$DATE_VAR
+
+cp -f temp/* ./
+rm -rf temp
+
+cd logs/DEBUG-$DATE_VAR
+rm -rf debug-extract-from-shutterfly
+rm -rf extract-from-shutterfly
+rm -rf extract-from-shutterfly-helper
+rm -rf README.md
+rm -rf script_exec_finish
+rm -rf script_exec_started
+
+
+
+# bare bones check that this script finished:
+cd -
+echo "DEBUG-$DATE_VAR" >> script_exec_finish
+
